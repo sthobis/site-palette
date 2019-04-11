@@ -1,0 +1,22 @@
+{
+    "name": "site-palette",
+    "alias": "site-palette",
+    "version": 2,
+    "builds": [
+        { "src": "www/package.json", "use": "@now/next" },
+        { "src": "api/*.js", "use": "@now/node" }
+    ],
+    "routes": [
+        {
+          "src": "/api/(.*)",
+          "dest": "/api/$1"
+        },
+        {
+          "src": "/(.*)",
+          "dest": "/www/$1",
+          "headers": {
+            "x-request-path": "$1"
+          }
+        }
+    ]
+}
