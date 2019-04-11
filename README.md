@@ -4,4 +4,5 @@ Extract a color palette from a website.
 
 ### How it works?
 
-site-palette creates a screenshot of your website on the backend and use it to generates a color palette. Color palette generation is powered by [node-vibrant](https://github.com/akfish/node-vibrant).
+`site-palette` creates a screenshot of your website on the backend and uses it to generate a color palette.  
+It uses [node-vibrant](https://github.com/akfish/node-vibrant) to identify the prominent colors.
