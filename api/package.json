@@ -1,5 +1,13 @@
 {
   "dependencies": {
-    "micro": "^9.3.3"
+    "capture-website": "^0.3.2",
+    "chrome-aws-lambda": "^1.14.0",
+    "micro": "^9.3.3",
+    "micro-dev": "^3.0.0",
+    "node-vibrant": "^3.2.0-alpha",
+    "puppeteer-core": "^1.14.0"
+  },
+  "scripts": {
+    "dev": "micro-dev -p 3001 get-palette.js"
   }
 }

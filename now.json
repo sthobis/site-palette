@@ -4,19 +4,16 @@
     "version": 2,
     "builds": [
         { "src": "www/package.json", "use": "@now/next" },
-        { "src": "api/*.js", "use": "@now/node" }
+        { "src": "api/*.js", "use": "@now/node", "config": { "maxLambdaSize": "40mb" } }
     ],
     "routes": [
         {
-          "src": "/api/(.*)",
-          "dest": "/api/$1"
+          "src": "/api/get-palette.js",
+          "methods": ["GET"]
         },
         {
           "src": "/(.*)",
-          "dest": "/www/$1",
-          "headers": {
-            "x-request-path": "$1"
-          }
+          "dest": "/www/$1"
         }
     ]
 }

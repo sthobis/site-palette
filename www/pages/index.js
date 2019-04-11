@@ -1,15 +1,27 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Head from "next/head"
-import 'isomorphic-unfetch'
+import "isomorphic-unfetch"
 
-const Page = ({ site: initialSite }) => {
+const Page = ({ site: initialSite, api }) => {
   const [site, setSite] = useState(initialSite)
   const [palette, setPalette] = useState(null)
+  const [isFetching, setIsFetching] = useState(false)
+  
+  const getSitePalette = async (e) => {
+    e && e.preventDefault()
+    setIsFetching(true)
 
-  const getSitePalette = (e) => {
-    e.preventDefault()
-    setPalette(['red', 'green', 'blue'])
+    const res = (await (await fetch(`${api}/?site=${site}`)).json())
+
+    setPalette(res.palette)
+    setIsFetching(false)
   }
+
+  useEffect(() => {
+    if (site) {
+      getSitePalette()
+    }
+  }, [])
 
   return (
     <div className="container">
@@ -20,15 +32,22 @@ const Page = ({ site: initialSite }) => {
         <input
           value={site}
           onChange={e => setSite(e.target.value)}
-          placeholder="https://sleddit.now.sh"
+          placeholder="https://sthobis.github.io"
+          disabled={isFetching}
         />
-        <button>Get Palette</button>
+        <button disabled={isFetching}>
+          {
+            isFetching ? (
+              <div className="spinner" />
+            ) : "Get Palette"
+          }
+        </button>
       </form>
       {
         palette && (
           <ul className="palette">
             {
-              palette.map((color, i) => (
+              Object.values(palette).map((color, i) => (
                 <li
                   key={i}
                   className="color"
@@ -56,7 +75,7 @@ const Page = ({ site: initialSite }) => {
           color: #111;
           margin: 0;
           font-size: 18px;
-          font-family: 'Source Sans Pro', sans-serif;
+          font-family: "Source Sans Pro", sans-serif;
         }
 
         .container {
@@ -84,13 +103,14 @@ const Page = ({ site: initialSite }) => {
           border: 1px solid #ccc;
           border-radius: 4px;
           font-size: 18px;
-          font-family: 'Source Sans Pro', sans-serif;
+          font-family: "Source Sans Pro", sans-serif;
           margin-right: 20px;
         }
 
         button {
           flex-grow: 0;
           flex-shrink: 0;
+          width: 120px;
           padding: 4px 20px;
           color: #fff;
           background: #111;
@@ -98,7 +118,8 @@ const Page = ({ site: initialSite }) => {
           border-radius: 4px;
           font-size: 14px;
           font-weight: 500;
-          font-family: 'Source Sans Pro', sans-serif;
+          font-family: "Source Sans Pro", sans-serif;
+          text-align: center;
           text-transform: uppercase;
           cursor: pointer;
         }
@@ -143,7 +164,7 @@ const Page = ({ site: initialSite }) => {
         }
 
         a::before {
-          content: '';
+          content: "";
           position: absolute;
           bottom: 2px;
           left: 0;
@@ -163,13 +184,34 @@ const Page = ({ site: initialSite }) => {
         a:hover::before {
           background-color: rgba(255, 0, 0, 0.2);
         }
+
+        .spinner {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(255,255,255,.3);
+          border-radius: 50%;
+          border-top-color: #fff;
+          animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+          to { -webkit-transform: rotate(360deg); }
+        }
       `}</style>
     </div>
   )
 }
 
-Page.getInitialProps = async ({ query }) => {
-  return { site: query.site || "" }
+Page.getInitialProps = async ({ req, query }) => {
+  const protocol = process.env.NOW_REGION === "dev1" ? "http" : "https"
+  const host = process.env.NOW_REGION === "dev1" ? "localhost:3001" : req.headers.host
+  const api = `${protocol}://${host}/api/get-palette.js`
+
+  return {
+    site: query.site || "",
+    api
+  }
 }
 
 export default Page
