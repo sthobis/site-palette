@@ -26,6 +26,8 @@ const Page = ({ site: initialSite, api }) => {
   return (
     <div className="container">
       <Head>
+        <title>Site Palette {site && `for ${site}`}</title>
+        <link rel="icon" type="image/png" href="/static/icon.png" />
         <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" />
       </Head>
       <form onSubmit={getSitePalette}>

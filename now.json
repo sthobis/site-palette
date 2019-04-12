@@ -3,13 +3,18 @@
     "alias": "site-palette",
     "version": 2,
     "builds": [
-        { "src": "www/package.json", "use": "@now/next" },
-        { "src": "api/*.js", "use": "@now/node", "config": { "maxLambdaSize": "40mb" } }
+        { "src": "/www/package.json", "use": "@now/next" },
+        { "src": "/api/*.js", "use": "@now/node", "config": { "maxLambdaSize": "40mb" } },
+        { "src": "/static/*", "use": "@now/static" }
     ],
     "routes": [
         {
           "src": "/api/get-palette.js",
           "methods": ["GET"]
+        },
+        {
+          "src": "/static/(.*)",
+          "dest": "/static/$1"
         },
         {
           "src": "/(.*)",
