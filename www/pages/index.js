@@ -84,7 +84,7 @@ const Page = ({ site: initialSite, api }) => {
           justify-content: center;
           align-items: center;
           width: 100%;
-          max-width: 600px;
+          max-width: 700px;
           min-height: 100vh;
           margin: 0 auto;
           padding: 40px;
@@ -126,18 +126,20 @@ const Page = ({ site: initialSite, api }) => {
 
         ul {
           display: flex;
-          margin: 0 0 40px 0;
+          justify-content: center;
+          flex-wrap: wrap;
+          margin: 0 0 20px 0;
           padding: 0;
           list-style-type: none;
+          width: 100%;
         }
 
         .color {
           display: flex;
           justify-content: center;
           flex-direction: column;
-          flex-wrap: wrap;
           align-items: center;
-          margin-right: 20px;
+          margin: 0 20px 20px 0;
         }
 
         .color:last-child {
@@ -154,6 +156,7 @@ const Page = ({ site: initialSite, api }) => {
         p {
           font-size: 16px;
           margin: 0 0 50px 0;
+          text-align: center;
         }
 
         a {
@@ -197,6 +200,35 @@ const Page = ({ site: initialSite, api }) => {
 
         @keyframes spin {
           to { -webkit-transform: rotate(360deg); }
+        }
+
+        @media (max-width: 767px) {
+          form {
+            flex-direction: column;
+          }
+
+          input {
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 20px;
+          }
+
+          button {
+            width: 100%;
+            height: 45px;
+          }
+
+          ul {
+            justify-content: space-between;
+          }
+
+          .color {
+            width: calc((100% - 40px) / 3);
+          }
+
+          .color:nth-child(3n) {
+            margin-right: 0;
+          }
         }
       `}</style>
     </div>
