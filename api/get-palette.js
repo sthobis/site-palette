@@ -3,6 +3,7 @@ const { send, sendError } = require("micro")
 const chrome = require("chrome-aws-lambda")
 const puppeteer = require("puppeteer-core")
 const Vibrant = require("node-vibrant")
+const cors = require("micro-cors")()
 
 const isValidUrl = str => {
   try {
@@ -14,16 +15,22 @@ const isValidUrl = str => {
   }
 }
 
+const exePath = "./node_modules/puppeteer/.local-chromium/win64-641577/chrome-win/chrome.exe"
 const getOptions = async () => {
-  return {
-    args: chrome.args,
-    executablePath: await chrome.executablePath,
-    headless: chrome.headless
-  }
+  return process.env.NOW_REGION === "dev1"
+    ? {
+        args: [],
+        executablePath: exePath,
+        headless: true,
+    }
+    : {
+      args: chrome.args,
+      executablePath: await chrome.executablePath,
+      headless: chrome.headless
+    }
 }
 
 let _page = null
-
 const getPage = async () => {
   if (_page) {
     return _page
@@ -33,7 +40,7 @@ const getPage = async () => {
   return _page
 }
 
-module.exports = async (req, res) => {
+module.exports = cors(async (req, res) => {
   try {
     const { query = {} } = parse(req.url, true)
     const site = query.site
@@ -55,4 +62,4 @@ module.exports = async (req, res) => {
   } catch (e) {
     sendError(req, res, e)
   }
-}
+})
