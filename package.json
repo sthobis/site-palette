@@ -1,0 +1,24 @@
+{
+  "name": "site-palette",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "Stefanus Thobi Sinaga",
+    "email": "s.thobi.sinaga@gmail.com"
+  },
+  "dependencies": {
+    "chrome-aws-lambda": "^2.1.1",
+    "isomorphic-unfetch": "3.0.0",
+    "next": "^9.3.6",
+    "node-vibrant": "^3.1.5",
+    "puppeteer-core": "^3.0.2",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0"
+  },
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "devDependencies": {}
+}

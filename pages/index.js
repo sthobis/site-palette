@@ -1,73 +1,69 @@
-import React, { useState, useEffect } from "react"
-import Head from "next/head"
-import "isomorphic-unfetch"
+import React, { useState, useEffect } from "react";
+import Head from "next/head";
+import "isomorphic-unfetch";
 
-const Page = ({ site: initialSite, api }) => {
-  const [site, setSite] = useState(initialSite)
-  const [palette, setPalette] = useState(null)
-  const [isFetching, setIsFetching] = useState(false)
-  
+const Page = ({ site: initialSite }) => {
+  const [site, setSite] = useState(initialSite);
+  const [palette, setPalette] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+
   const getSitePalette = async (e) => {
-    e && e.preventDefault()
-    setIsFetching(true)
+    e && e.preventDefault();
+    setIsFetching(true);
 
-    const res = (await (await fetch(`${api}/?site=${site}`)).json())
+    const res = await (await fetch(`/api/palette?site=${site}`)).json();
 
-    setPalette(res.palette)
-    setIsFetching(false)
-  }
+    setPalette(res.palette);
+    setIsFetching(false);
+  };
 
   useEffect(() => {
     if (site) {
-      getSitePalette()
+      getSitePalette();
     }
-  }, [])
+  }, []);
 
   return (
     <div className="container">
       <Head>
         <title>Site Palette {site && `for ${site}`}</title>
-        <link rel="icon" type="image/png" href="/static/icon.png" />
-        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" />
+        <link rel="icon" type="image/png" href="/icon.png" />
+        <link
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro"
+          rel="stylesheet"
+        />
       </Head>
       <form onSubmit={getSitePalette}>
         <input
           value={site}
-          onChange={e => setSite(e.target.value)}
+          onChange={(e) => setSite(e.target.value)}
           placeholder="https://sthobis.github.io"
           disabled={isFetching}
         />
-        <button disabled={isFetching}>
-          {
-            isFetching ? (
-              <div className="spinner" />
-            ) : "Get Palette"
-          }
+        <button disabled={!site || isFetching}>
+          {isFetching ? <div className="spinner" /> : "Get Palette"}
         </button>
       </form>
-      {
-        palette && (
-          <ul className="palette">
-            {
-              Object.values(palette).map((color, i) => (
-                <li
-                  key={i}
-                  className="color"
-                >
-                  <div
-                    className="thumbnail"
-                    style={{
-                      backgroundColor: color
-                    }}
-                  />
-                  {color}
-                </li>
-              ))
-            }
-          </ul>
-        )
-      }
-      <p>Made by <a href="https://github.com/sthobis">@sthobis</a>. Source available on <a href="https://github.com/sthobis/site-palette">github</a>.</p>
+      {palette && (
+        <ul className="palette">
+          {Object.values(palette).map((color, i) => (
+            <li key={i} className="color">
+              <div
+                className="thumbnail"
+                style={{
+                  backgroundColor: color,
+                }}
+              />
+              {color}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p>
+        Made by <a href="https://github.com/sthobis">@sthobis</a>. Source
+        available on{" "}
+        <a href="https://github.com/sthobis/site-palette">github</a>.
+      </p>
       <style jsx global>{`
         * {
           box-sizing: border-box;
@@ -178,7 +174,7 @@ const Page = ({ site: initialSite, api }) => {
           height: 4px;
           background-color: rgba(0, 0, 0, 0.2);
           transform: rotate(-5deg) skew(-40deg);
-          transition: .3s;
+          transition: 0.3s;
           z-index: -1;
         }
 
@@ -194,14 +190,16 @@ const Page = ({ site: initialSite, api }) => {
           display: inline-block;
           width: 20px;
           height: 20px;
-          border: 3px solid rgba(255,255,255,.3);
+          border: 3px solid rgba(255, 255, 255, 0.3);
           border-radius: 50%;
           border-top-color: #fff;
           animation: spin 1s ease infinite;
         }
 
         @keyframes spin {
-          to { -webkit-transform: rotate(360deg); }
+          to {
+            -webkit-transform: rotate(360deg);
+          }
         }
 
         @media (max-width: 767px) {
@@ -234,18 +232,7 @@ const Page = ({ site: initialSite, api }) => {
         }
       `}</style>
     </div>
-  )
-}
+  );
+};
 
-Page.getInitialProps = async ({ req, query }) => {
-  const protocol = process.env.NOW_REGION === "dev1" ? "http" : "https"
-  const host = process.env.NOW_REGION === "dev1" ? "localhost:3001" : req.headers.host
-  const api = `${protocol}://${host}/api/get-palette.js`
-
-  return {
-    site: query.site || "",
-    api
-  }
-}
-
-export default Page
+export default Page;
