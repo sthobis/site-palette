@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import "isomorphic-unfetch";
 
-const Page = ({ site: initialSite }) => {
-  const [site, setSite] = useState(initialSite);
+let initialFetch = false;
+
+const Page = () => {
+  const [site, setSite] = useState("");
   const [palette, setPalette] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState(null);
 
   const getSitePalette = async (e) => {
     e && e.preventDefault();
@@ -13,15 +16,30 @@ const Page = ({ site: initialSite }) => {
 
     const res = await (await fetch(`/api/palette?site=${site}`)).json();
 
-    setPalette(res.palette);
+    if (res.error) {
+      setError(res.error);
+      setPalette(null);
+    } else {
+      setError(null);
+      setPalette(res.palette);
+    }
     setIsFetching(false);
   };
 
   useEffect(() => {
-    if (site) {
-      getSitePalette();
+    const params = new URL(document.location).searchParams;
+    const initialSite = params.get("site");
+    if (initialSite) {
+      setSite(initialSite);
+      initialFetch = true;
     }
   }, []);
+  useEffect(() => {
+    if (initialFetch && site) {
+      initialFetch = false;
+      getSitePalette();
+    }
+  }, [site]);
 
   return (
     <div className="container">
@@ -34,15 +52,18 @@ const Page = ({ site: initialSite }) => {
         />
       </Head>
       <form onSubmit={getSitePalette}>
-        <input
-          value={site}
-          onChange={(e) => setSite(e.target.value)}
-          placeholder="https://sthobis.github.io"
-          disabled={isFetching}
-        />
-        <button disabled={!site || isFetching}>
-          {isFetching ? <div className="spinner" /> : "Get Palette"}
-        </button>
+        <div className="row">
+          <input
+            value={site}
+            onChange={(e) => setSite(e.target.value)}
+            placeholder="https://sthobis.github.io"
+            disabled={isFetching}
+          />
+          <button disabled={!site || isFetching}>
+            {isFetching ? <div className="spinner" /> : "Get Palette"}
+          </button>
+        </div>
+        {error && <div className="error">{error}</div>}
       </form>
       {palette && (
         <ul className="palette">
@@ -89,15 +110,19 @@ const Page = ({ site: initialSite }) => {
         }
 
         form {
-          display: flex;
-          align-items: stretch;
           width: 100%;
           margin-bottom: 50px;
         }
 
+        .row {
+          display: flex;
+          align-items: stretch;
+          width: 100%;
+        }
+
         input {
           flex: 1 1 100%;
-          padding: 10px 20px;
+          padding: 10px 14px;
           border: 1px solid #ccc;
           border-radius: 4px;
           font-size: 18px;
@@ -120,6 +145,12 @@ const Page = ({ site: initialSite }) => {
           text-align: center;
           text-transform: uppercase;
           cursor: pointer;
+        }
+
+        .error {
+          font-size: 16px;
+          color: #de1e1e;
+          margin: 10px 0 0 0;
         }
 
         ul {
@@ -203,7 +234,7 @@ const Page = ({ site: initialSite }) => {
         }
 
         @media (max-width: 767px) {
-          form {
+          .row {
             flex-direction: column;
           }
 
@@ -216,6 +247,10 @@ const Page = ({ site: initialSite }) => {
           button {
             width: 100%;
             height: 45px;
+          }
+
+          .error {
+            margin-top: 20px;
           }
 
           ul {
